@@ -1,15 +1,30 @@
 pipeline {
+    environment {
+        docker_registry = "sviato/visdom_server"
+        docker_registry_credential = credentials('docker_hub_password')
+    }
     agent any
-
     stages {
-        stage('Clone Dockerfile') {
+        stage('Clonning Dockerfile') {
             steps {
-                git clone https://github.com/SviatoO/serve_jenkins.git
+                sh "git clone https://github.com/SviatoO/serve_jenkins.git"
             }
         }
-        stage('Build') {
+        stage('Build docker image') {
             steps {
-                docker build -t sviato/visdom .
+                sh "cd serve_jenkins && docker build -t $docker_registry:$BUILD_NUMBER ."
+            }
+        }
+        stage('Deploy to DockerHub') {
+            steps {
+                sh "docker login --username sviato --password $docker_registry_credential"
+                sh "docker push $docker_registry:$BUILD_NUMBER"
+            }
+        }
+        stage('Remove unused files and docker image') {
+            steps {
+                sh "docker rmi $docker_registry:$BUILD_NUMBER"
+                sh "cd /home/node/jenkins/workspace/serve_docker_pipeline && rm -rf serve_jenkins"
             }
         }
     }

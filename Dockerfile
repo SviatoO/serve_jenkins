@@ -1,9 +1,4 @@
-# Instructions:
-# $ docker build -t activeeon/visdom_server .
-# $ docker run -it --rm -p 8097:8097 activeeon/visdom_server
-# or (for secure connection)
-# $ docker run -it --rm -p 8097:8097 -e VISDOM_ENABLE_LOGIN="True" -e VISDOM_USERNAME="admin" -e VISDOM_PASSWORD="admin" activeeon/visdom_server
-#
+
 FROM python:3.6
 
 #WORKDIR /root
